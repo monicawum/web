@@ -48,9 +48,6 @@ public class Request {
         if (uri.compareTo("/") == 0) {
             uri = "/index.htm";
         }
-        // if (uri.indexOf(".") == -1) {
-        // uri += ".htm";
-        // }
         return uri;
     }
 }

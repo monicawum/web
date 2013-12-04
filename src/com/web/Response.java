@@ -48,12 +48,12 @@ public class Response {
                     output.write("\r\n".getBytes("UTF-8"));
                     listFile(file.listFiles(), HttpServer.WEB_ROOT);
                 } else if (file.isFile()) {
-                    String prefix = null;
+                    String suffix = null;
                     if (file.getName().lastIndexOf(".") > 0) {
-                        prefix = file.getName().substring(file.getName().lastIndexOf(".") + 1);
+                        suffix = file.getName().substring(file.getName().lastIndexOf(".") + 1);
                     }
 
-                    String contentType = getContentType(prefix);
+                    String contentType = getContentType(suffix);
                     output.write(("Content-Type:" + contentType + "; charset=utf-8\r\n").getBytes("UTF-8"));
                     output.write("\r\n".getBytes("UTF-8"));
                     fis = new FileInputStream(file);
@@ -71,7 +71,7 @@ public class Response {
                 System.out.println("用户请求的资源不存在");
                 String errorMessage = "HTTP/1.1 404 File Not Found\r\n" + "Content-Type:text/html\r\n" + "\r\n"
                                       + "<hl>File Not Found</hl>";
-                output.write(errorMessage.getBytes());
+                output.write(errorMessage.getBytes("UTF-8"));
             }
             output.flush();
         } catch (Exception ex) {
@@ -89,21 +89,21 @@ public class Response {
             if (aa.isDirectory()) {
                 output.write(("<a href='"
                               + aa.getAbsolutePath().substring(aa.getAbsolutePath().indexOf(root) + root.length())
-                              + "'>" + aa.getName() + "</a>").getBytes());
+                              + "'>" + aa.getName() + "</a>").getBytes("UTF-8"));
             } else {
                 output.write(("<a href='"
                               + aa.getAbsolutePath().substring(aa.getAbsolutePath().indexOf(root) + root.length())
-                              + "'>" + aa.getName() + "</a>" + "&nbsp;&nbsp;&nbsp;" + aa.length() + "bytes").getBytes());
+                              + "'>" + aa.getName() + "</a>" + "&nbsp;&nbsp;&nbsp;" + aa.length() + "bytes").getBytes("UTF-8"));
             }
-            output.write("<br/><br/>".getBytes());
+            output.write("<br/><br/>".getBytes("UTF-8"));
         }
     }
 
-    private static String getContentType(String prefix) {
-        if (prefix == null || "".equals(prefix)) {
-            return "text/plain";
+    private static String getContentType(String suffix) {
+        if (suffix == null || "".equals(suffix)) {
+            return "application/octet-stream";
         }
-        String contentType = fileTypeMap.get(prefix);
+        String contentType = fileTypeMap.get(suffix);
         if (contentType != null) {
             return contentType;
         }
