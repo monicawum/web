@@ -9,11 +9,10 @@ import java.net.Socket;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 public class HttpServer {
 
-    private int                IPORT      = 8080;                                                       // default port
+    private int                iport      = 8080;                                                       // default port
     public static final String BASIC_ROOT = System.getProperty("user.dir");
     public static String       WEB_ROOT   = System.getProperty("user.dir") + File.separator + "webroot";
 
@@ -59,9 +58,9 @@ public class HttpServer {
             strKey = (String) enumer.nextElement();
             strValue = pps.getProperty(strKey);
             if (strValue.equals("") != true) {
-                IPORT = Integer.parseInt(strValue);
+                iport = Integer.parseInt(strValue);
             }
-            System.out.println("Web服务器访问端口为：" + IPORT);
+            System.out.println("Web服务器访问端口为：" + iport);
             System.out.println("您可以修改Config.properties文件重新设定以上配置");
             System.out.println("启动检查完成，服务器初始化中...");
         } catch (IOException ex) {
@@ -73,10 +72,10 @@ public class HttpServer {
         System.out.println("Web 服务器启动中...");
         ServerSocket serverSocket;
         try {
-            serverSocket = new ServerSocket(IPORT);
+            serverSocket = new ServerSocket(iport);
             System.out.println("Web 启动完成！");
             System.out.println("您现在可以在浏览器中访问http://localhost:8080/，以测试服务器是否运行");
-            ThreadPoolExecutor threadPool = ThreadPoolService.getInstance(2, 4, 3, TimeUnit.SECONDS).getThreadPool();
+            ThreadPoolExecutor threadPool = ThreadPoolService.getThreadPool();
             Socket socket = null;
             System.out.println("等待连接...");
             while (true) {

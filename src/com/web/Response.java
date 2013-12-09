@@ -2,27 +2,31 @@ package com.web;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
+import java.util.Properties;
 
 public class Response {
 
-    private static final int           BUFFER_SIZE = 1024;
-    Request                            request;
-    OutputStream                       output;
+    private static final int  BUFFER_SIZE = 1024;
+    Request                   request;
+    OutputStream              output;
 
-    private static Map<String, String> fileTypeMap = new HashMap<String, String>();
+    private static Properties pps         = new Properties();
 
     static {
-        fileTypeMap.put("jpg", "image/jpeg");
-        fileTypeMap.put("png", "image/png");
-        fileTypeMap.put("gif", "image/gif");
-        fileTypeMap.put("css", "text/css");
-        fileTypeMap.put("js", "application/x-javascript");
-        fileTypeMap.put("xls", "application/vnd.ms-excel");
-        fileTypeMap.put("txt", "text/plain");
+
+        try {
+            pps.load(new FileInputStream("httpHeadType.properties"));
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
     }
 
@@ -68,10 +72,14 @@ public class Response {
                     System.out.println("发送完毕！");
                 }
             } else {
-                System.out.println("用户请求的资源不存在");
-                String errorMessage = "HTTP/1.1 404 File Not Found\r\n" + "Content-Type:text/html\r\n" + "\r\n"
-                                      + "<hl>File Not Found</hl>";
-                output.write(errorMessage.getBytes("UTF-8"));
+                if (request.getRequestMethod().equals("GET")) {
+                    get();
+                } else {
+                    System.out.println("用户请求的资源不存在");
+                    String errorMessage = "HTTP/1.1 404 File Not Found\r\n" + "Content-Type:text/html\r\n" + "\r\n"
+                                          + "<hl>File Not Found</hl>";
+                    output.write(errorMessage.getBytes("UTF-8"));
+                }
             }
             output.flush();
         } catch (Exception ex) {
@@ -82,6 +90,14 @@ public class Response {
         if (fis != null) {
             fis.close();
         }
+    }
+
+    public void get() {
+        System.out.println("get method params:" + request.getParamString());
+    }
+
+    public void post() throws UnsupportedEncodingException, IOException {
+        System.out.println("post method params:" + request.getParamString());
     }
 
     private void listFile(File[] filelist, String root) throws IOException {
@@ -103,7 +119,7 @@ public class Response {
         if (suffix == null || "".equals(suffix)) {
             return "application/octet-stream";
         }
-        String contentType = fileTypeMap.get(suffix);
+        String contentType = pps.getProperty(suffix);
         if (contentType != null) {
             return contentType;
         }

@@ -6,27 +6,18 @@ import java.util.concurrent.TimeUnit;
 
 public class ThreadPoolService {
 
-    public static ThreadPoolExecutor threadPool = null;
-
     private ThreadPoolService() {
     }
 
-    private static final ThreadPoolService threadPoolService = new ThreadPoolService();
+    private static ThreadPoolExecutor threadPool = null;
 
-    public synchronized static ThreadPoolService getInstance(int corePoolSize, int maximumPoolSize, long keepAliveTime,
-                                                             TimeUnit unit) {
-        if (threadPool == null) {
-            if (unit == null) {
-                unit = TimeUnit.SECONDS;
+    public static ThreadPoolExecutor getThreadPool() {
+        synchronized (ThreadPoolService.class) {
+            if (threadPool == null) {
+                threadPool = new ThreadPoolExecutor(3, 5, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(3),
+                                                    new ThreadPoolExecutor.DiscardOldestPolicy());
             }
-            threadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit,
-                                                new ArrayBlockingQueue<Runnable>(3),
-                                                new ThreadPoolExecutor.DiscardOldestPolicy());
         }
-        return threadPoolService;
-    }
-
-    public ThreadPoolExecutor getThreadPool() {
         return threadPool;
     }
 }
