@@ -59,6 +59,7 @@ public class Response {
 
                     String contentType = getContentType(suffix);
                     output.write(("Content-Type:" + contentType + "; charset=utf-8\r\n").getBytes("UTF-8"));
+                    output.write(("Content-Length:" + file.length() + "\r\n").getBytes("UTF-8"));
                     output.write("\r\n".getBytes("UTF-8"));
                     fis = new FileInputStream(file);
                     int ch = fis.read(bytes, 0, BUFFER_SIZE);
